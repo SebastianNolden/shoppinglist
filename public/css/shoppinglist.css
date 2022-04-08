@@ -1,0 +1,150 @@
+body {
+  background-color: var(--background_color);
+  margin: 0px;
+  font-family: 'Roboto Mono', monospace;
+}
+
+#header {
+  background-color: var(--highlight_color);
+  padding: 24px 16px;
+  box-shadow: 0px 5px 5px 2px var(--shadow_color);
+}
+
+#title {
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 24px;
+}
+
+#inputWrapper {
+  display: flex;
+  justify-content: center;
+  flex-flow: row wrap;
+  position: relative;
+}
+
+#inputSend {
+  display: flex;
+}
+
+.menuButton {
+  border: 1px solid var(--background_color);
+  background-color: var(--background_color);
+  color: var(--text_color);
+}
+
+.menuButton:hover {
+  cursor: pointer;
+}
+
+#addItem {
+  border-left: 0px hidden white;
+  height: 40px;
+  width: 40px;
+  margin-left: 0px;
+}
+
+#inputItem {
+  border: 3px solid var(--background_color);
+  border-right: 0px hidden white;
+  background-color: var(--content_color);
+  color: var(--text_color);
+}
+
+#inputItem:focus {
+  position: relative;
+  z-index: 3000;
+}
+
+#Shoppinglist {
+  margin-top: 8px;
+}
+
+#Donelist {
+  margin-top: 8px;
+}
+
+#addItem, #deleteList, #inputItem {
+  font-family: inherit;
+}
+
+#deleteList {
+  margin-left: auto;
+}
+
+.contentButton:hover, .deleteButton:hover, .listText:hover, .listTextDone:hover {
+  cursor: pointer;
+}
+
+.shoppinglistItem {
+  background-color: var(--content_color);
+  display: flex;
+  align-items: stretch;
+  height: auto;
+  min-height: 50px;
+  padding: 2px 4px;
+  margin-bottom: 2px;
+  box-shadow: 0px 5px 5px 2px var(--shadow_color);
+}
+
+.shoppinglistItemDone {
+  background-color: var(--background_color);
+  display: flex;
+  align-items: stretch;
+  height: auto;
+  min-height: 50px;
+  padding: 2px 4px;
+  margin: 2px;
+  border: 1px solid var(--text_color);
+}
+
+.amountWrapper {
+  display: flex;
+}
+
+.amountWrapperDone {
+  display: flex;
+  pointer-events: none;
+}
+
+.listAmount, .contentButton {
+  align-self: center;
+}
+
+.itemTextWrapper {
+  display: inline-block;
+  width: 100%;
+  word-wrap: break-all;
+  overflow-wrap: anywhere;
+  padding-right: 6px;
+  padding-left: 12px;
+}
+
+.listText {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 100%;
+}
+
+.listTextDone {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 100%;
+  text-decoration: line-through;
+}
+
+.deleteButton {
+  margin: 0px 6px;
+  align-self: center;
+}
+
+.contentButton {
+  margin: 0px 4px;
+}
+
+.vline {
+  height: 100%;
+  border-right: 1px solid var(--text_color);
+}

@@ -1,0 +1,73 @@
+body {
+  font-family: 'Roboto Mono', monospace;
+  color: var(--text_color);
+  background-color: var(--content_color);
+  margin: 0px;
+}
+
+#title {
+  background-color: var(--highlight_color);
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  padding: 24px 0px;
+  box-shadow: 0px 5px 5px 2px var(--shadow_color);
+}
+
+#login {
+  display: flex;
+  flex-direction: column;
+  margin-top: 12px;
+  position: relative;
+  background-color: var(--content_color);
+  padding: 8px;
+  height: 100%;
+}
+
+#loginError {
+  text-align: center;
+}
+
+.loginLabel {
+  display: inline-block;
+  min-width: 80px;
+}
+
+.menuButton {
+  border: 1px solid var(--background_color);
+  background-color: var(--content_color);
+  color: var(--text_color);
+}
+
+.loginInput {
+  border: 1px solid var(--background_color)
+}
+
+#loginButton {
+  width: 120px;
+  height: 36px;
+  margin: 24px 0px;
+  font-size: 18px;
+}
+
+#loginButton:hover {
+  cursor: pointer;
+  background-color: var(--background_color);
+}
+
+#registerRef {
+  max-width: 118px;
+  height: 34px;
+  line-height: 34px;
+  text-align: center;
+  border: 1px solid var(--background_color);
+}
+
+#registerRef, #registerRef:hover, #registerRef:focus, #registerRef:active {
+  text-decoration: none;
+  color: var(--text_color)
+}
+
+#registerRef:hover {
+  background-color: var(--background_color);
+}

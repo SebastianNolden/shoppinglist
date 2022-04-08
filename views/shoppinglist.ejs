@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <link rel="stylesheet" type="text/css" href="/css/color_palette.css">
+  <link rel="stylesheet" type="text/css" href="/css/shoppinglist.css">
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet"> 
+</head>
+<body>
+
+  <div id="header">
+    <div id="title">My Shoppinglist</div>
+    <div id="inputWrapper">
+      <div id="inputSend">
+        <input type="text" id="inputItem" name="item" placeholder="new Item..." list="dlItems" required>
+        <button type="button" class="menuButton" id="addItem"><i class="uil uil-arrow-right"></i></button>
+      </div>
+      <button type="button" class="menuButton" id="deleteList">Delete List</button>
+    </div>
+    <datalist id="dlItems">
+      <option value="Milch"></option>
+    </datalist>
+  </div>
+
+  
+  <div id="Shoppinglist">
+
+  </div>
+
+  <div id="Donelist">
+
+  </div>
+
+  <script src="/js/test.js" type="application/Javascript"></script>
+
+  <script>
+    /////////////////////////////////////////////////
+    ////            Script - Start               ////
+    /////////////////////////////////////////////////
+
+    const input = document.getElementById('inputItem')
+    const addBtn = document.getElementById('addItem')
+    const DELETE_WHOLE_LIST = document.getElementById('deleteList')
+    const shoppinglist = document.getElementById('Shoppinglist')
+    const donelist = document.getElementById('Donelist')
+    const datalist = document.getElementById('dlItems')
+
+    // get all item names from the items collection
+    const allItems = '<%= itemNames %>'
+    const allShoppinglistItemsString = '<%= shoppinglistItems %>'
+    const allShoppinglistItems = parseListData(allShoppinglistItemsString)
+
+    addItemsToDatalist()
+    addItemsFromDatabaseToShoppinglist(allShoppinglistItems)
+
+    addBtn.onclick = () => {
+      if (input.value != "")  {
+        addItemToDatabase(input.value)
+        input.value = ""
+      }
+    };
+
+    DELETE_WHOLE_LIST.onclick = () => {
+      deleteWholeList()
+    }
+
+    function addItemToShoppinglist(value, item_id, amn, done){
+      var div = document.createElement("div")
+      if (done) div.classList.add('shoppinglistItemDone')
+      else div.classList.add('shoppinglistItem')
+      div.dataset.status = done
+
+      var amountWrapper = document.createElement('span')
+      if (done) amountWrapper.classList.add('amountWrapperDone')
+      else amountWrapper.classList.add('amountWrapper')
+
+      var addButton = document.createElement('span')
+      addButton.classList.add('contentButton')
+      addButton.innerHTML = '<i class="uil uil-plus"></i>'
+
+      addButton.addEventListener('click', function(){
+        increaseAmount(amount, item_id)
+      })
+
+      var subtractButton = document.createElement('span')
+      subtractButton.classList.add('contentButton')
+      subtractButton.innerHTML = '<i class="uil uil-minus"></i>'
+
+      subtractButton.addEventListener('click', function(){
+        decreaseAmount(amount, item_id)
+      })
+
+      var amount = document.createElement('span')
+      amount.classList.add('listAmount')
+      amount.textContent = amn
+      amount.dataset.value = amn
+
+      var vLine = document.createElement('span')
+      vLine.classList.add('vline')
+
+      var itemText = document.createElement("span")
+      if (done) itemText.classList.add('listTextDone')
+      else itemText.classList.add('listText')
+      itemText.textContent = value
+
+      var itemTextWrapper = document.createElement('span')
+      itemTextWrapper.classList.add('itemTextWrapper')
+
+      var itemButton = document.createElement("span")
+      itemButton.classList.add('deleteButton')
+      itemButton.innerHTML = '<i class="uil uil-trash-alt unicon"></i>'
+
+      // add the new elements to the webcontent
+      amountWrapper.append(addButton)
+      amountWrapper.append(amount)
+      amountWrapper.append(subtractButton)
+      amountWrapper.append(vLine)
+
+      itemTextWrapper.append(itemText)
+
+      div.append(amountWrapper)
+      div.append(itemTextWrapper)
+      div.append(itemButton)
+
+      itemButton.addEventListener('click', function(){
+        removeItemFromDatabase(div, item_id)
+      });
+
+      itemText.addEventListener('click', function(){
+        sendUpdateDoneStatus(item_id, div, itemText, amountWrapper)
+      })
+
+      if (done) donelist.append(div)
+      else shoppinglist.append(div)
+    }
+
+    function addItemToDatabase(v){
+      var xhr = new XMLHttpRequest()
+      xhr.open("POST", '/shoppinglist/addItem', true)
+      xhr.setRequestHeader('Content-Type', 'application/json')
+      xhr.send(JSON.stringify({
+        value: v,
+      }));
+
+      xhr.onload = event => {
+        addItemToShoppinglist(v, JSON.parse(event.target.response).id, '1', false)
+      }
+    }
+
+    function removeItemFromDatabase(div, item_id){
+      var xhr = new XMLHttpRequest()
+      xhr.open("POST", '/shoppinglist/removeItem', true)
+      xhr.setRequestHeader('Content-Type', 'application/json')
+      xhr.send(JSON.stringify({
+        itemid: item_id
+      }));
+
+      xhr.onload = event => { div.remove() }
+    }
+
+    function parseListData(listdata){
+      let re = /&#34;/gi
+      let shoppinglistItems = []
+      const shoppinglistItemsString = listdata.replace(re, '"')
+
+      if (!(shoppinglistItemsString === "")) {
+        const allShoppinglistItemsArray = shoppinglistItemsString.split('.')
+        allShoppinglistItemsArray.forEach(item => shoppinglistItems.push(JSON.parse(item)))
+      }
+      
+      return shoppinglistItems
+    }
+
+    function addItemsFromDatabaseToShoppinglist(data){
+      data.forEach(item => addItemToShoppinglist(item.name, item.item_id, item.amount, item.done))
+    }
+
+    function increaseAmount(amount, item_id){
+      let num = parseInt(amount.dataset.value)
+      num = num + 1
+      
+      sendUpdateAmount(num, item_id, amount)
+    }
+
+    function decreaseAmount(amount, item_id){
+      let num = parseInt(amount.dataset.value)
+      num = num - 1
+      if (num <= 0) num = 1
+      amount.textContent = num
+      amount.dataset.value = num
+      
+      sendUpdateAmount(num, item_id, amount)
+    }
+
+    function sendUpdateAmount(num, item_id, amount){
+      var xhr = new XMLHttpRequest()
+      xhr.open("POST", '/shoppinglist/updateAmountofItem', true)
+      xhr.setRequestHeader('Content-Type', 'application/json')
+      xhr.send(JSON.stringify({
+        newAmount: num,
+        itemid: item_id
+      }));
+      
+      xhr.onload = event => {
+        amount.textContent = num
+        amount.dataset.value = num
+      }
+    }
+
+    function sendUpdateDoneStatus(item_id, elem, text, amount){
+      const status = !(elem.dataset.status === 'true')
+      
+      var xhr = new XMLHttpRequest()
+      xhr.open("POST", '/shoppinglist/updateDoneStatusofItem', true)
+      xhr.setRequestHeader('Content-Type', 'application/json')
+      xhr.send(JSON.stringify({
+        newStatus: status,
+        itemid: item_id
+      }));
+
+      xhr.onload = event => { toggleShoppinglistItemClass(status, elem, text, amount) }
+    }
+
+    function toggleShoppinglistItemClass(doneStatus, elem, text, amount){
+      if (doneStatus) {
+        elem.className = 'shoppinglistItemDone'
+        text.className = 'listTextDone'
+        amount.className = 'amountWrapperDone'
+        elem.remove()
+        donelist.append(elem)
+      } else {
+        elem.className = 'shoppinglistItem'
+        text.className = 'listText'
+        amount.className = 'amountWrapper'
+        elem.remove()
+        shoppinglist.append(elem)
+      }
+      elem.dataset.status = doneStatus
+    }
+    
+    function deleteWholeList(){
+      var xhr = new XMLHttpRequest()
+      xhr.open("POST", '/shoppinglist/deleteWholeList', true)
+      xhr.setRequestHeader('Content-Type', 'application/json')
+      xhr.send();
+
+      xhr.onload = event => { deleteallItemsfrombothLists() }
+    }
+
+    function deleteallItemsfrombothLists(){
+      let list1 = document.getElementById('Shoppinglist')
+      let list2 = document.getElementById('Donelist')
+      var parent
+
+      while (list1.firstChild) {
+        list1.removeChild(list1.lastChild)
+      }
+
+      while (list2.firstChild) {
+        list2.removeChild(list2.lastChild)
+      }
+    }
+
+    function addItemsToDatalist(){
+      let itemsArray = allItems.split(',')
+
+      itemsArray.forEach( item => {
+        let elem = document.createElement('option')
+        elem.value = item
+
+        datalist.append(elem)
+      })
+    }
+  </script>
+</body>
+</html>

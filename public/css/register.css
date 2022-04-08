@@ -1,0 +1,61 @@
+body {
+  margin: 0px;
+  background-color: var(--content_color);
+  font-family: 'Roboto Mono', monospace;
+  color: var(--text_color);
+}
+
+#title {
+  background-color: var(--highlight_color);
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  padding: 24px 0px;
+  box-shadow: 0px 5px 5px 2px var(--shadow_color);
+}
+
+#register {
+  margin-top: 12px;
+  padding: 8px;
+}
+
+.registerLabel {
+  display: inline-block;
+  min-width: 80px;
+}
+
+.menuButton {
+  border: 1px solid var(--background_color);
+  background-color: var(--content_color);
+  color: var(--text_color);
+}
+
+#registerButton {
+  width: 120px;
+  height: 36px;
+  margin: 24px 0px;
+  font-size: 18px;
+}
+
+#registerButton:hover {
+  cursor: pointer;
+  background-color: var(--background_color);
+}
+
+#loginRef {
+  display: inline-block;
+  width: 118px;
+  height: 34px;
+  font-size: 18px;
+  line-height: 34px;
+  text-align: center;
+}
+
+#loginRef, #loginRef:hover, #loginRef:focus, #loginRef:active {
+  text-decoration: none;
+  color: var(--text_color)
+}
+
+#loginRef:hover {
+  background-color: var(--background_color);
+}
