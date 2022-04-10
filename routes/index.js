@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const User = require('../models/user')
 const bcrypt = require('bcrypt')
-const { randomUUID } = require('crypto')
+const crypto = require('crypto')
 const auth = require('../module/passport-init')
 
 // homepage route
@@ -44,7 +44,7 @@ router.post('/register', auth.checkNotAuthenticated, async (req, res) => {
     const hashPW = await bcrypt.hash(req.body.password, 10)
     let user_id
     try {
-      user_id = randomUUID()
+      user_id = crypto.randomUUID()
     } catch (err) {
       console.log(err)
     }

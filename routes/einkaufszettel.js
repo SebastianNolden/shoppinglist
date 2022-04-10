@@ -5,7 +5,7 @@ const Item = require('../models/item')
 const Shoppinglist = require('../models/shoppinglist')
 const auth = require('../module/passport-init')
 const db = require('../module/mongoose-functions')
-const { randomUUID } = require('crypto')
+const crypto = require('crypto')
 
 
 
@@ -34,7 +34,7 @@ router.post('/addItem', auth.checkAuthenticated, async (req, res) => {
   let item_id
 
   try {
-    item_id = randomUUID()
+    item_id = crypto.randomUUID()
   } catch (error) {
     console.log(error)
   }
