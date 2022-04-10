@@ -31,7 +31,13 @@ router.post('/addItem', auth.checkAuthenticated, async (req, res) => {
   const itemValue = req.body.value
   const user_id = req.cookies.user_id
   const createNewItem = !(await db.itemInDB(itemValue))
-  const item_id = randomUUID()
+  let item_id
+
+  try {
+    item_id = randomUUID()
+  } catch (error) {
+    console.log(error)
+  }
 
   const item = new Item({
     name: itemValue
