@@ -42,7 +42,12 @@ router.post('/register', auth.checkNotAuthenticated, async (req, res) => {
   } else {
     // E-mail is not in the database --> create user
     const hashPW = await bcrypt.hash(req.body.password, 10)
-    const user_id = randomUUID()
+    let user_id
+    try {
+      user_id = randomUUID()
+    } catch (err) {
+      console.log(err)
+    }
     const user = new User({
       name: req.body.name,
       email: userMail,
