@@ -44,7 +44,7 @@ router.post('/register', auth.checkNotAuthenticated, async (req, res) => {
     const hashPW = await bcrypt.hash(req.body.password, 10)
     let user_id
     try {
-      user_id = uuidv4.randomUUID()
+      user_id = uuidv4()
     } catch (err) {
       console.log(err)
     }

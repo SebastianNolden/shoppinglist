@@ -34,7 +34,7 @@ router.post('/addItem', auth.checkAuthenticated, async (req, res) => {
   let item_id
 
   try {
-    item_id = uuidv4.randomUUID()
+    item_id = uuidv4()
   } catch (error) {
     console.log(error)
   }
