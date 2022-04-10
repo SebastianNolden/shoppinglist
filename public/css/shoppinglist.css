@@ -16,6 +16,11 @@ body {
   font-size: 24px;
 }
 
+#logoutButton {
+  margin-bottom: 8px;
+  padding: 4px 8px;
+}
+
 #inputWrapper {
   display: flex;
   justify-content: center;
@@ -31,10 +36,6 @@ body {
   border: 1px solid var(--background_color);
   background-color: var(--background_color);
   color: var(--text_color);
-}
-
-.menuButton:hover {
-  cursor: pointer;
 }
 
 #addItem {
