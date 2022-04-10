@@ -19,7 +19,9 @@
   <div id="header">
     <div id="title">My Shoppinglist</div>
     <div>
-      <button id="logoutButton" type="submit" class="menuButton">Log out</button>
+      <form action="/logout?_method=DELETE" method="POST">
+        <button id="logoutButton" type="submit" class="menuButton">Log out</button>
+      </form>      
     </div>
     <div id="inputWrapper">
       <div id="inputSend">
@@ -74,10 +76,6 @@
 
     DELETE_WHOLE_LIST.onclick = () => {
       deleteWholeList()
-    }
-
-    LOGOUT_BUTTON.onclick = () => {
-      logout()
     }
 
     function addItemToShoppinglist(value, item_id, amn, done){
@@ -286,17 +284,6 @@
 
         datalist.append(elem)
       })
-    }
-
-    function logout(){
-      var xhr = new XMLHttpRequest()
-      xhr.open("DELETE", '/logout', true)
-      xhr.setRequestHeader('Content-Type', 'application/json')
-      xhr.send();
-
-      xhr.onload = (event) => {
-        window.location.href = event.originalTarget.responseURL
-      }
     }
   </script>
 </body>
