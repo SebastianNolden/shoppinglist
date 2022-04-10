@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "devStart": "nodemon server.js",
-    "start": "node server.js"
+    "prodStart": "pm2 start server.js"
   },
   "author": "Sebastian Nolden",
   "license": "ISC",
