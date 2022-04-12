@@ -73,28 +73,51 @@ router.post('/addItem', auth.checkAuthenticated, async (req, res) => {
   const num = 1
   const done = false
   // add new Item to the list
-  const response = db.addItemtoShoppinglist(user_id, itemValue, num, item_id, done)
+  const response = await db.addItemtoShoppinglist(user_id, itemValue, num, item_id, done)
 
-  res.json({id: item_id})
-
+  let shoppinglistItems = await getAllItemsfromListasString(req.cookies.user_id)
+  res.send(shoppinglistItems)
 })
 
-router.post('/removeItem', auth.checkAuthenticated, (req, res) => {
-  db.removeItemfromShoppinglist(req.cookies.user_id, req.body.itemid)
+router.post('/removeItem', auth.checkAuthenticated, async (req, res) => {
+  await db.removeItemfromShoppinglist(req.cookies.user_id, req.body.itemid)
 
-  res.json({status: "deleted"})
+  let shoppinglistItems = await getAllItemsfromListasString(req.cookies.user_id)
+  res.send(shoppinglistItems)
 })
 
-router.post('/updateAmountofItem', auth.checkAuthenticated, (req, res) => {
-  db.updateAmountofItemonList(req.cookies.user_id, req.body.itemid, req.body.newAmount)
+router.post('/increaseAmountofItem', auth.checkAuthenticated, async (req, res) => {
+  const curAmountObj = await db.allItemsinShoppinglist(req.cookies.user_id)
+  let curAmount = 0
+  curAmountObj.shoppinglist.forEach( (item) => {
+    if (item.item_id === req.body.itemid) curAmount = item.amount + 1
+  })
+  await db.updateAmountofItemonList(req.cookies.user_id, req.body.itemid, curAmount)
 
-  res.json({status: 'updated'})
+  let shoppinglistItems = await getAllItemsfromListasString(req.cookies.user_id)
+  res.send(shoppinglistItems)
 })
 
-router.post('/updateDoneStatusofItem', auth.checkAuthenticated, (req, res) => {
-  db.updateDoneStatusofItemonList(req.cookies.user_id, req.body.itemid, req.body.newStatus)
+router.post('/decreaseAmountofItem', auth.checkAuthenticated, async (req, res) => {
+  let curAmountObj = await db.allItemsinShoppinglist(req.cookies.user_id)
+  let curAmount = 0
+  curAmountObj.shoppinglist.forEach( (item) => {
+    if (item.item_id === req.body.itemid) {
+      if (item.amount <= 1) curAmount = 1
+      else curAmount = item.amount - 1
+    }
+  })
+  await db.updateAmountofItemonList(req.cookies.user_id, req.body.itemid, curAmount)
 
-  res.json({status: 'updated'})
+  let shoppinglistItems = await getAllItemsfromListasString(req.cookies.user_id)
+  res.send(shoppinglistItems)
+})
+
+router.post('/updateDoneStatusofItem', auth.checkAuthenticated, async (req, res) => {
+  await db.updateDoneStatusofItemonList(req.cookies.user_id, req.body.itemid, req.body.newStatus)
+
+  let shoppinglistItems = await getAllItemsfromListasString(req.cookies.user_id)
+  res.send(shoppinglistItems)
 })
 
 router.post('/deleteWholeList', auth.checkAuthenticated, (req, res) => {
@@ -102,5 +125,18 @@ router.post('/deleteWholeList', auth.checkAuthenticated, (req, res) => {
 
   res.json({status: 'notDone'})
 })
+
+async function getAllItemsfromListasString(user_id){
+  const shoppinglistDB = await db.allItemsinShoppinglist(user_id)
+  let shoppinglistItems = ""
+
+  if(shoppinglistDB) {
+    const shoppinglistItemsOBJ = shoppinglistDB.shoppinglist
+    shoppinglistItemsOBJ.forEach(i => shoppinglistItems += `${JSON.stringify(i)}.`)
+    shoppinglistItems = shoppinglistItems.slice(0, -1)
+  }
+
+  return shoppinglistItems
+}
 
 module.exports = router

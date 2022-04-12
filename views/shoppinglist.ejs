@@ -93,7 +93,7 @@
       addButton.innerHTML = '<i class="uil uil-plus"></i>'
 
       addButton.addEventListener('click', function(){
-        increaseAmount(amount, item_id)
+        increaseAmount(item_id)
       })
 
       var subtractButton = document.createElement('span')
@@ -101,13 +101,12 @@
       subtractButton.innerHTML = '<i class="uil uil-minus"></i>'
 
       subtractButton.addEventListener('click', function(){
-        decreaseAmount(amount, item_id)
+        decreaseAmount(item_id)
       })
 
       var amount = document.createElement('span')
       amount.classList.add('listAmount')
       amount.textContent = amn
-      amount.dataset.value = amn
 
       var vLine = document.createElement('span')
       vLine.classList.add('vline')
@@ -137,7 +136,7 @@
       div.append(itemButton)
 
       itemButton.addEventListener('click', function(){
-        removeItemFromDatabase(div, item_id)
+        removeItemFromDatabase(item_id)
       });
 
       itemText.addEventListener('click', function(){
@@ -156,12 +155,12 @@
         value: v,
       }));
 
-      xhr.onload = event => {
-        addItemToShoppinglist(v, JSON.parse(event.target.response).id, '1', false)
+      xhr.onload = (event) => {
+        reloadandAddAllItems(event.target.response)
       }
     }
 
-    function removeItemFromDatabase(div, item_id){
+    function removeItemFromDatabase(item_id){
       var xhr = new XMLHttpRequest()
       xhr.open("POST", '/shoppinglist/removeItem', true)
       xhr.setRequestHeader('Content-Type', 'application/json')
@@ -169,7 +168,9 @@
         itemid: item_id
       }));
 
-      xhr.onload = event => { div.remove() }
+      xhr.onload = (event) => { 
+        reloadandAddAllItems(event.target.response)
+      }
     }
 
     function parseListData(listdata){
@@ -189,35 +190,29 @@
       data.forEach(item => addItemToShoppinglist(item.name, item.item_id, item.amount, item.done))
     }
 
-    function increaseAmount(amount, item_id){
-      let num = parseInt(amount.dataset.value)
-      num = num + 1
-      
-      sendUpdateAmount(num, item_id, amount)
-    }
-
-    function decreaseAmount(amount, item_id){
-      let num = parseInt(amount.dataset.value)
-      num = num - 1
-      if (num <= 0) num = 1
-      amount.textContent = num
-      amount.dataset.value = num
-      
-      sendUpdateAmount(num, item_id, amount)
-    }
-
-    function sendUpdateAmount(num, item_id, amount){
+    function increaseAmount(item_id){
       var xhr = new XMLHttpRequest()
-      xhr.open("POST", '/shoppinglist/updateAmountofItem', true)
+      xhr.open("POST", '/shoppinglist/increaseAmountofItem', true)
       xhr.setRequestHeader('Content-Type', 'application/json')
       xhr.send(JSON.stringify({
-        newAmount: num,
         itemid: item_id
-      }));
+      }))
       
-      xhr.onload = event => {
-        amount.textContent = num
-        amount.dataset.value = num
+      xhr.onload = (event) => {
+        reloadandAddAllItems(event.target.response)
+      }
+    }
+
+    function decreaseAmount(item_id){
+      var xhr = new XMLHttpRequest()
+      xhr.open("POST", '/shoppinglist/decreaseAmountofItem', true)
+      xhr.setRequestHeader('Content-Type', 'application/json')
+      xhr.send(JSON.stringify({
+        itemid: item_id
+      }))
+      
+      xhr.onload = (event) => {
+        reloadandAddAllItems(event.target.response)
       }
     }
 
@@ -232,24 +227,9 @@
         itemid: item_id
       }));
 
-      xhr.onload = event => { toggleShoppinglistItemClass(status, elem, text, amount) }
-    }
-
-    function toggleShoppinglistItemClass(doneStatus, elem, text, amount){
-      if (doneStatus) {
-        elem.className = 'shoppinglistItemDone'
-        text.className = 'listTextDone'
-        amount.className = 'amountWrapperDone'
-        elem.remove()
-        donelist.append(elem)
-      } else {
-        elem.className = 'shoppinglistItem'
-        text.className = 'listText'
-        amount.className = 'amountWrapper'
-        elem.remove()
-        shoppinglist.append(elem)
+      xhr.onload = (event) => { 
+        reloadandAddAllItems(event.target.response)
       }
-      elem.dataset.status = doneStatus
     }
     
     function deleteWholeList(){
@@ -284,6 +264,11 @@
 
         datalist.append(elem)
       })
+    }
+    function reloadandAddAllItems(response){
+      const allShoppinglistItems = parseListData(response)
+      deleteallItemsfrombothLists()
+      addItemsFromDatabaseToShoppinglist(allShoppinglistItems)
     }
   </script>
 </body>
